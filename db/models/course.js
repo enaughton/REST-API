@@ -10,12 +10,12 @@ module.exports = sequelize => {
         primaryKey: true,
         autoIncrement: true
       },
-      author: {
+      title: {
         type: Sequelize.STRING
       },
       description: { type: Sequelize.TEXT },
       estimatedtime: { type: Sequelize.STRING, allowNull: true },
-      martrialsNeeded: { type: Sequelize.STRING, allowNull: true }
+      materialsNeeded: { type: Sequelize.STRING, allowNull: true }
     },
     { sequelize }
   );

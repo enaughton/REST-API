@@ -7,6 +7,16 @@ const Sequelize = require("Sequelize");
 const { models } = require("./db");
 const { User, Course } = models; //database connection
 
+//asyncHandler
+function asyncHandler(cb) {
+  return async (req, res, next) => {
+    try {
+      await cb(req, res, next);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  };
+}
 //Database connection
 const sequelize = new Sequelize({
   dialect: "sqlite",
@@ -37,30 +47,41 @@ app.use(morgan("dev"));
 // setup a friendly greeting for the root route
 app.get("/", (req, res) => {
   res.json({
-    message: " welcome to our REST API"
+    message: "Welcome to our thing"
   });
 });
 
 //get user routes
-app.get("/api/users", (req, res) => {
-  res.json({
-    message: "Im a user"
-  });
-});
+app.get(
+  "/api/users",
+  asyncHandler(async (req, res) => {
+    const user = await User.findAll();
+    res.json({
+      user
+    });
+  })
+);
 
 //get courses route
-app.get("/api/courses/", (req, res) => {
-  res.json({
-    message: "I'm a list of courses"
-  });
-});
-
-app.get("/courses/:id", (req, res) => {
-  const course =
-  res.json({
-    message: "I'm an ID"
-  });
-});
+app.get(
+  "/api/courses/",
+  asyncHandler(async (req, res) => {
+    const course = await Course.findAll(res.params);
+    res.json({
+      course
+    });
+  })
+);
+// Get course By ID
+app.get(
+  "/api/courses/:id",
+  asyncHandler(async (req, res) => {
+    const course = await Course.findByPk(res.params.id);
+    res.json({
+      course
+    });
+  })
+);
 
 // send 404 if no other route matched
 app.use((req, res) => {
