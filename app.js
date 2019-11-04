@@ -76,7 +76,7 @@ app.get(
 app.get(
   "/api/courses/:id",
   asyncHandler(async (req, res) => {
-    const course = await Course.findByPk(res.params.id);
+    const course = await Course.findByPk(req.params.id);
     res.json({
       course
     });
