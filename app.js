@@ -41,6 +41,7 @@ const app = express();
 
 // setup morgan which gives us http request logging
 app.use(morgan("dev"));
+app.use(express.json());
 
 // TODO setup your api routes here
 
@@ -62,6 +63,21 @@ app.get(
   })
 );
 
+//create user
+
+app.post(
+  "/api/users",
+  asyncHandler(async (req, res) => {
+    const user = await User.create({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      emailAddress: req.body.emailAddress,
+      password: req.body.password
+    });
+    res.json(user);
+  })
+);
+
 //get courses route
 app.get(
   "/api/courses/",
@@ -77,9 +93,26 @@ app.get(
   "/api/courses/:id",
   asyncHandler(async (req, res) => {
     const course = await Course.findByPk(req.params.id);
+    console.log(course);
     res.json({
       course
     });
+  })
+);
+
+//Post Route for Courses
+
+app.post(
+  "/api/courses/",
+  asyncHandler(async (req, res) => {
+    const course = await Course.create({
+      title: req.body.title,
+      description: req.body.description,
+      estimatedTime: req.body.estimatedTime,
+      materialsNeeded: req.body.materialsNeeded,
+      UserId: req.body.UserId
+    });
+    res.json(course);
   })
 );
 
