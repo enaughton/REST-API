@@ -68,13 +68,13 @@ app.get(
 app.post(
   "/api/users",
   asyncHandler(async (req, res) => {
-    const user = await User.create({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      emailAddress: req.body.emailAddress,
-      password: req.body.password
-    });
-    res.json(user);
+    try {
+      const user = await User.create(req.body);
+      res.status(201).end();
+      res.json(user);
+    } catch (err) {
+      console.log(err);
+    }
   })
 );
 
@@ -105,14 +105,14 @@ app.get(
 app.post(
   "/api/courses/",
   asyncHandler(async (req, res) => {
-    const course = await Course.create({
-      title: req.body.title,
-      description: req.body.description,
-      estimatedTime: req.body.estimatedTime,
-      materialsNeeded: req.body.materialsNeeded,
-      UserId: req.body.UserId
-    });
-    res.json(course);
+    let course;
+    try {
+      const course = await Course.create(req.body);
+      res.status(201).end();
+      res.json(course);
+    } catch (err) {
+      console.log(err);
+    }
   })
 );
 

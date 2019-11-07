@@ -14,7 +14,7 @@ const options = {
     // that Sequelize generates from our models. These columns are often useful
     // with production apps, so we'd typically leave them enabled, but for our
     // purposes let's keep things as simple as possible.
-    timestamps: false
+    timestamps: true
   }
 };
 
