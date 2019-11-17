@@ -48,27 +48,31 @@ app.use(express.json());
 
 // TODO setup your api routes here
 
-const authenticateUser = (req, res, next) => {
+const authenticateUser = asyncHandler(async (req, res, next) => {
   let message = null;
-  let users = [];
 
   const credentials = auth(req);
-  console.log(credentials);
 
   if (credentials) {
-    const user = users.find(u => u.userName === credentials.name);
+    const user = await User.findOne({
+      where: {
+        emailAddress: credentials.name
+      }
+    });
 
     if (user) {
-      const authenticated = bcryptjs.compateSync(
+      const authenticated = bcryptjs.compareSync(
         credentials.pass,
         user.password
       );
       if (authenticated) {
-        console.log(`Authentication successful for username: ${user.userName}`);
+        console.log(
+          `Authentication successful for username: ${user.emailAddress}`
+        );
 
         req.currentUser = user;
       } else {
-        message = `Authentication failure for username: ${userName}`;
+        message = `Authentication failure for username: ${user.emailAddress}`;
       }
     } else {
       message = `User not found for username: ${credentials.name}`;
@@ -82,7 +86,7 @@ const authenticateUser = (req, res, next) => {
   } else {
     next();
   }
-};
+});
 
 // setup a friendly greeting for the root route
 app.get("/", (req, res) => {
