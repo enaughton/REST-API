@@ -50,14 +50,13 @@ app.use(express.json());
 
 const authenticateUser = (req, res, next) => {
   let message = null;
-  const users = [];
+  let users = [];
 
   const credentials = auth(req);
-  console.log(users);
+  console.log(credentials);
 
   if (credentials) {
     const user = users.find(u => u.userName === credentials.name);
-    console.log(user);
 
     if (user) {
       const authenticated = bcryptjs.compateSync(
@@ -95,9 +94,10 @@ app.get("/", (req, res) => {
 //get user routes
 app.get("/api/users", authenticateUser, (req, res) => {
   const user = req.currentUser;
-  res.json({
-    name: user.name,
-    emailAddress: user.userName
+  res.status(200).json({
+    emailAddress: user.emailAddress,
+    firstName: user.firstName,
+    lastName: user.lastName
   });
 });
 
