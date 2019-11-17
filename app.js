@@ -6,8 +6,10 @@ const morgan = require("morgan");
 const Sequelize = require("Sequelize");
 const { models } = require("./db");
 const { User, Course } = models; //database connection
+const auth = require("basic-auth");
+const bcryptjs = require("bcryptjs");
 
-//asyncHandler
+asyncHandler;
 function asyncHandler(cb) {
   return async (req, res, next) => {
     try {
@@ -17,6 +19,7 @@ function asyncHandler(cb) {
     }
   };
 }
+
 //Database connection
 const sequelize = new Sequelize({
   dialect: "sqlite",
@@ -45,6 +48,43 @@ app.use(express.json());
 
 // TODO setup your api routes here
 
+const authenticateUser = (req, res, next) => {
+  let message = null;
+  const users = [];
+
+  const credentials = auth(req);
+  console.log(users);
+
+  if (credentials) {
+    const user = users.find(u => u.userName === credentials.name);
+    console.log(user);
+
+    if (user) {
+      const authenticated = bcryptjs.compateSync(
+        credentials.pass,
+        user.password
+      );
+      if (authenticated) {
+        console.log(`Authentication successful for username: ${user.userName}`);
+
+        req.currentUser = user;
+      } else {
+        message = `Authentication failure for username: ${userName}`;
+      }
+    } else {
+      message = `User not found for username: ${credentials.name}`;
+    }
+  } else {
+    message = "Auth Header not found";
+  }
+  if (message) {
+    console.warn(message);
+    res.status(401).json({ message: "Access Denied" });
+  } else {
+    next();
+  }
+};
+
 // setup a friendly greeting for the root route
 app.get("/", (req, res) => {
   res.json({
@@ -53,16 +93,23 @@ app.get("/", (req, res) => {
 });
 
 //get user routes
-app.get(
-  "/api/users",
-  asyncHandler(async (req, res) => {
-    const user = await User.findAll();
-    res.json({
-      user
-    });
-  })
-);
+app.get("/api/users", authenticateUser, (req, res) => {
+  const user = req.currentUser;
+  res.json({
+    name: user.name,
+    emailAddress: user.userName
+  });
+});
 
+/*
+app.get("/api/users", asyncHandler(async (req, res) => {
+  const user = await User.findAll(req.body)
+  res.json({
+    user
+  });
+})
+);
+*/
 //create user
 
 app.post(
@@ -112,6 +159,40 @@ app.post(
       res.json(course);
     } catch (err) {
       console.log(err);
+    }
+  })
+);
+
+//Update/Edit Course
+
+app.put(
+  "/api/courses/:id",
+  asyncHandler(async (req, res) => {
+    try {
+      const course = await Course.findByPk(req.params.id);
+      if (course) {
+        title: req.body.title;
+        description: req.body.description;
+        materialsNeeded: req.body.materialsNeeded;
+        await res.json(course);
+      } else {
+        res.status(404).json({ message: "Course was not found" });
+      }
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  })
+);
+
+//Delete Course
+app.delete(
+  "/api/courses/:id",
+  asyncHandler(async (req, res) => {
+    try {
+      const course = await Course.findByPk(req.params.id);
+      await course.destroy();
+    } catch (err) {
+      res.status(500).json({ message: err.message });
     }
   })
 );
