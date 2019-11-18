@@ -125,6 +125,9 @@ app.post(
       res.json(user);
     } catch (err) {
       console.log(err);
+      res.json({
+        err
+      });
     }
   })
 );
