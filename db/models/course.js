@@ -14,7 +14,7 @@ module.exports = sequelize => {
         type: Sequelize.STRING
       },
       description: { type: Sequelize.TEXT },
-      estimatedtime: { type: Sequelize.STRING, allowNull: true },
+      estimatedTime: { type: Sequelize.STRING, allowNull: true },
       materialsNeeded: { type: Sequelize.STRING, allowNull: true }
     },
     { sequelize }
