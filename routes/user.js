@@ -77,7 +77,7 @@ app.get("/users", authenticateUser, (req, res) => {
 //create user
 
 app.post(
-  "/api/users",
+  "/users",
   asyncHandler(async (req, res) => {
     try {
       const user = await User.create(req.body);
