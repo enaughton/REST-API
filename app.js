@@ -44,7 +44,6 @@ const enableGlobalErrorLogging =
 
 // create the Express app
 const app = express();
-//app.use("/api", course);
 
 // setup morgan which gives us http request logging
 app.use(morgan("dev"));
@@ -134,7 +133,7 @@ app.post(
       res.end();
     } catch (err) {
       console.error(err);
-      res.status(404).json({ message: "user was not found" });
+      res.status(404).json({ message: "user was not created" });
     }
   })
 );
@@ -173,7 +172,8 @@ app.post(
     try {
       const course = await Course.create(req.body);
       await res.json(course);
-      res.location("/courses/:id");
+      res.status(201).location("/courses/:id");
+      res.end();
     } catch (err) {}
   })
 );
@@ -182,6 +182,7 @@ app.post(
 
 app.put(
   "/api/courses/:id",
+  authenticateUser,
   asyncHandler(async (req, res) => {
     try {
       const course = await Course.findByPk(req.params.id);
@@ -201,6 +202,7 @@ app.put(
 //Delete Course
 app.delete(
   "/api/courses/:id",
+  authenticateUser,
   asyncHandler(async (req, res) => {
     try {
       const course = await Course.findByPk(req.params.id);

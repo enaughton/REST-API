@@ -1,6 +1,7 @@
 const express = require("express");
-const { models } = require("../db");
-const { User } = models;
+
+const { Course } = require("../db/models/course");
+
 const router = express.Router();
 const { check, validationResult } = require("express-validator");
 const bcryptjs = require("bcryptjs");
@@ -24,9 +25,11 @@ function asyncHandler(cb) {
 
 //get courses route
 app.get(
-  "/courses/",
+  "/courses",
   asyncHandler(async (req, res) => {
-    const course = await Course.findAll(res.params);
+    const course = await Course.findAll({
+      include: [{ model: User, as: "user" }]
+    });
     res.json({
       course
     });
@@ -36,7 +39,9 @@ app.get(
 app.get(
   "/courses/:id",
   asyncHandler(async (req, res) => {
-    const course = await Course.findByPk(req.params.id);
+    const course = await Course.findByPk(req.params.id, {
+      include: [{ model: User, as: "user" }]
+    });
     res.json({
       course
     });
@@ -51,9 +56,8 @@ app.post(
     let course;
     try {
       const course = await Course.create(req.body);
-      res.location("/api/courses/:id");
-      res.status(201).end();
-      res.json(course);
+      await res.json(course);
+      res.location("/courses/:id");
     } catch (err) {}
   })
 );
@@ -65,19 +69,15 @@ app.put(
   asyncHandler(async (req, res) => {
     try {
       const course = await Course.findByPk(req.params.id);
-      if (course) {
-        title: req.body.title;
-        description: req.body.description;
-        materialsNeeded: req.body.materialsNeeded;
-        estimatedTime: req.body.estimatedTime;
+      if (!course)
+        res
+          .status(404)
+          .json({ message: "This course with this id is not found" });
+      course.update(req.body);
 
-        await res.json(course);
-        res.location("/api/courses/:id");
-      } else {
-        res.status(404).json({ message: "Course was not found" });
-      }
-    } catch (err) {
-      res.status(500).json({ message: err.message });
+      await res.status(204).end();
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
   })
 );
@@ -89,6 +89,7 @@ app.delete(
     try {
       const course = await Course.findByPk(req.params.id);
       await course.destroy();
+      res.status(204).end();
     } catch (err) {
       res.status(500).json({ message: err.message });
     }

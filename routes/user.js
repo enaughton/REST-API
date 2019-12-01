@@ -65,7 +65,7 @@ const authenticateUser = asyncHandler(async (req, res, next) => {
 });
 
 //get user routes
-app.get("/users", authenticateUser, (req, res) => {
+app.get("/api/users", authenticateUser, (req, res) => {
   const user = req.currentUser;
   res.status(200).json({
     emailAddress: user.emailAddress,
@@ -77,13 +77,17 @@ app.get("/users", authenticateUser, (req, res) => {
 //create user
 
 app.post(
-  "/users",
+  "/api/users",
   asyncHandler(async (req, res) => {
+    console.log(req.body);
+    const user = req.body;
+
     try {
-      const user = await User.create(req.body);
-      res.status(201).end();
-      res.json(user);
+      await User.create(user);
+      res.status(201).setHeader("Location", "/");
+      res.end();
     } catch (err) {
+      console.error(err);
       res.status(404).json({ message: "user was not found" });
     }
   })
