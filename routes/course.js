@@ -1,3 +1,12 @@
+/*
+!!!!!!!!!!
+Not using the Routes Folder. 
+ALL ROUTES ARE IN App.js
+!!!!!!!!!!
+
+
+*/
+
 const express = require("express");
 
 const { Course } = require("../db/models/course");

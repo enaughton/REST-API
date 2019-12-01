@@ -1,3 +1,12 @@
+/*
+!!!!!!!!!!
+Not using the Routes Folder. 
+ALL ROUTES ARE IN App.js
+!!!!!!!!!!
+
+
+*/
+
 "use strict";
 
 const express = require("express");

@@ -167,6 +167,7 @@ app.get(
 
 app.post(
   "/api/courses/",
+  authenticateUser,
   asyncHandler(async (req, res) => {
     let course;
     try {
