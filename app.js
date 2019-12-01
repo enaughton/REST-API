@@ -129,8 +129,10 @@ app.post(
 
     try {
       await User.create(user);
-      res.status(201).setHeader("Location", "/");
-      res.end();
+      res
+        .status(201)
+        .location("/")
+        .end();
     } catch (err) {
       console.error(err);
       res.status(404).json({ message: "user was not created" });
@@ -173,8 +175,10 @@ app.post(
     try {
       const course = await Course.create(req.body);
       await res.json(course);
-      res.status(201).location("/courses/:id");
-      res.end();
+      res
+        .status(201)
+        .location("api/courses/:id")
+        .end();
     } catch (err) {}
   })
 );
