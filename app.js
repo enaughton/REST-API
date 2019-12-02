@@ -128,6 +128,11 @@ app.post(
     const user = req.body;
 
     try {
+    
+      if (user.password) {
+        user.password = bcryptjs.hashSync(user.password, 10);
+      }
+      console.log(user.password);
       await User.create(user);
       res
         .status(201)
@@ -135,7 +140,7 @@ app.post(
         .end();
     } catch (err) {
       console.error(err);
-      res.status(404).json({ message: "user was not created" });
+      res.status(404).json({ message: err.message });
     }
   })
 );
