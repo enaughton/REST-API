@@ -128,7 +128,6 @@ app.post(
     const user = req.body;
 
     try {
-    
       if (user.password) {
         user.password = bcryptjs.hashSync(user.password, 10);
       }
@@ -140,7 +139,7 @@ app.post(
         .end();
     } catch (err) {
       console.error(err);
-      res.status(404).json({ message: err.message });
+      res.status(400).json({ message: err.message });
     }
   })
 );
@@ -179,12 +178,13 @@ app.post(
     let course;
     try {
       const course = await Course.create(req.body);
-      await res.json(course);
       res
         .status(201)
         .location("api/courses/:id")
         .end();
-    } catch (err) {}
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
   })
 );
 
@@ -196,15 +196,17 @@ app.put(
   asyncHandler(async (req, res) => {
     try {
       const course = await Course.findByPk(req.params.id);
-      if (!course)
-        res
-          .status(404)
-          .json({ message: "This course with this id is not found" });
-      course.update(req.body);
 
-      await res.status(204).end();
+      if (req.body.title && req.body.description) {
+        course.update(req.body);
+        await res.status(204).end();
+      } else {
+        res
+          .status(400)
+          .json({ message: "Please enter a Title and/or Description" });
+      }
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(400).json({ message: error.message });
     }
   })
 );
