@@ -3,12 +3,9 @@
 // load modules
 const express = require("express");
 const morgan = require("morgan");
-//const user = require("./routes/user"); // Route file
-//const course = require("./routes/course");
 const Sequelize = require("Sequelize");
 const { models } = require("./db");
 const { User, Course } = models; //database connection
-
 const auth = require("basic-auth");
 const bcryptjs = require("bcryptjs");
 
@@ -49,8 +46,6 @@ const app = express();
 app.use(morgan("dev"));
 app.use(express.json());
 
-// TODO setup your api routes here
-
 // setup a friendly greeting for the root route
 app.get("/", (req, res) => {
   res.json({
@@ -69,6 +64,7 @@ function asyncHandler(cb) {
   };
 }
 
+//AuthenicateUser Checks if a User is Authorized to edit/delete a course.
 const authenticateUser = asyncHandler(async (req, res, next) => {
   let message = null;
 
@@ -109,7 +105,7 @@ const authenticateUser = asyncHandler(async (req, res, next) => {
   }
 });
 
-//get user routes
+//Get User Routes
 app.get("/api/users", authenticateUser, (req, res) => {
   const user = req.currentUser;
   res.status(200).json({
@@ -119,7 +115,7 @@ app.get("/api/users", authenticateUser, (req, res) => {
   });
 });
 
-//create user
+//Create User
 
 app.post(
   "/api/users",
@@ -144,7 +140,7 @@ app.post(
   })
 );
 
-//get courses route
+// Get Courses Route
 app.get(
   "/api/courses",
   asyncHandler(async (req, res) => {
@@ -156,7 +152,8 @@ app.get(
     });
   })
 );
-// Get course By ID
+
+// Get Course By ID
 app.get(
   "/api/courses/:id",
   asyncHandler(async (req, res) => {
@@ -169,7 +166,7 @@ app.get(
   })
 );
 
-//Post Route for Courses
+// Post Route for Courses
 
 app.post(
   "/api/courses/",
@@ -188,7 +185,7 @@ app.post(
   })
 );
 
-//Update/Edit Course
+// Update/Edit Course
 
 app.put(
   "/api/courses/:id",
@@ -211,7 +208,7 @@ app.put(
   })
 );
 
-//Delete Course
+// Delete Course
 app.delete(
   "/api/courses/:id",
   authenticateUser,
@@ -226,7 +223,7 @@ app.delete(
   })
 );
 
-// send 404 if no other route matched
+// Send 404 if no other route matched
 app.use((req, res) => {
   res.status(404).json({
     message: "Route Not Found"
