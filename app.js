@@ -120,22 +120,22 @@ app.get("/api/users", authenticateUser, (req, res) => {
 app.post(
   "/api/users",
   asyncHandler(async (req, res) => {
-    console.log(req.body);
     const user = req.body;
 
     try {
       if (user.password) {
         user.password = bcryptjs.hashSync(user.password, 10);
       }
-      console.log(user.password);
+
       await User.create(user);
       res
         .status(201)
         .location("/")
         .end();
     } catch (err) {
-      console.error(err);
-      res.status(400).json({ message: err.message });
+      res
+        .status(400)
+        .json({ message: "Please Enter your name, email and password", err });
     }
   })
 );
@@ -177,10 +177,12 @@ app.post(
       const course = await Course.create(req.body);
       res
         .status(201)
-        .location("api/courses/:id")
+        .location(`api/courses/${course.id}`)
         .end();
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      res
+        .status(400)
+        .json({ message: "Please Enter Title, and Description", error });
     }
   })
 );
